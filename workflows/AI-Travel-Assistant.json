@@ -1,0 +1,157 @@
+{
+  "name": "AI Travel Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "public": null,
+        "initialMessages": "Hi there! 👋\nMy name is SCD. How can I assist you today?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": null,
+      "position": [
+        null,
+        null
+      ],
+      "id": "763bbfbc-be28-48ea-bc76-e39062b47c7c",
+      "name": "When chat message received",
+      "webhookId": "ac1908fc-ade6-472a-bf19-29552937effc"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an AI Travel Assistant.\n\nYour goal is to help users with travel-related questions by selecting the appropriate tool(s) and presenting the results in a clear, friendly, and well-organized format.\n\n## Tool Selection Rules\n\n* If the user asks about current weather, use only the **Current Weather** tool.\n* If the user asks about future weather, tomorrow's weather, or weather forecasts, use only the **Weather Forecast** tool.\n* If the user asks about hotels or accommodation, use only the **Search Hotels** tool.\n* If the user asks about restaurants, cafes, food, or places to eat, use only the **Search Restaurants** tool.\n* If the user asks about tourist attractions, sightseeing, landmarks, or famous places, use only the **Tourist Information** tool.\n* If the user asks about currency conversion or exchange rates, use only the **Currency Exchange** tool.\n\nOnly combine multiple tools when the user requests more than one type of information, such as planning a trip.\n\n## Response Rules\n\n* Never call tools that are not needed.\n* Present information using clear headings and bullet points.\n* For hotels, include the hotel name, rating, price (if available), and type.\n* For restaurants, include the restaurant name, rating, cuisine (if available), and address.\n* For tourist attractions, include the attraction name, a brief description, and the Wikipedia link if available.\n* For weather, provide a concise summary including temperature and conditions. If the user asks for weather in a small town, beach, island, village, or tourist destination, use the full location (City/District/Country) when calling the weather tool. \nExample:\n Kuakata\n→ Kuakata, Patuakhali, Bangladesh\n\nCox's Bazar\n→ Cox's Bazar, Bangladesh\n\nSaint Martin\n→ Saint Martin's Island, Bangladesh\n\nSajek\n→ Sajek, Rangamati, Bangladesh\n\n* For currency conversion, show both the original amount and the converted amount.\n\nIf a tool returns no results, politely inform the user instead of making up information.\n\nKeep responses concise, accurate, and easy to read.\n\nRemember the user's travel preferences throughout the conversation.\n\nExamples of preferences:\n\n- Budget (Budget, Mid-range, Luxury)\n- Preferred hotel type\n- Preferred food\n- Preferred transportation\n- Preferred activities\n\nIf the user has previously shared a preference, automatically use it when giving recommendations.\n\nOnly ask again if the preference is unknown.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": null,
+      "position": [
+        null,
+        null
+      ],
+      "id": "6b6d7354-236c-4cdf-90d5-726067521cd8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": null,
+      "position": [
+        null,
+        null
+      ],
+      "id": "2a562da5-33b4-4fc2-83ca-34d22794e058",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "X0mQHpyFgycNjoOH",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": null
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": null,
+      "position": [
+        null,
+        null
+      ],
+      "id": "ebc715a6-feb2-4fc5-a0de-874070ea1d26",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://host.docker.internal:8080/mcp/travel-assistant",
+        "include": "selected",
+        "includeTools": [
+          "Restaurant_search_Tool",
+          "Hotel_Search_Tool",
+          "Tourism_attraction",
+          "Currency_Exchange",
+          "Weather_forecast",
+          "Current_Weather"
+        ],
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": null,
+      "position": [
+        null,
+        null
+      ],
+      "id": "0a0c18fc-0365-4fab-9b32-1a84f397f09e",
+      "name": "MCP Client"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": null
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": null
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": null
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": null
+          }
+        ]
+      ]
+    }
+  },
+  "active": null,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": null,
+    "timeSavedMode": "fixed",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": null,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "f6cf1986-ce2f-442b-a70b-3f0a57006e05",
+  "meta": {
+    "templateCredsSetupCompleted": null,
+    "instanceId": "YOUR_N8N_INSTANCE_ID"
+  },
+  "nodeGroups": [],
+  "id": "VxXpEONjbGuEvpmW",
+  "tags": []
+}
