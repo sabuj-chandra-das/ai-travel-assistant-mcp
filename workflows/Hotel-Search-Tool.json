@@ -1,0 +1,122 @@
+{
+  "name": "Hotel Search Tool",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "city"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": null,
+      "position": [
+        null,
+        null
+      ],
+      "id": "31fb170e-618a-4201-a25b-45ecf1c769ca",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": null,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google_maps"
+            },
+            {
+              "name": "q",
+              "value": "=={{$json.city}} hotels"
+            },
+            {
+              "name": "type",
+              "value": "search"
+            },
+            {
+              "name": "hl",
+              "value": "en"
+            },
+            {
+              "name": "gl",
+              "value": "us"
+            },
+            {
+              "name": "api_key",
+              "value": "YOUR_SERPAPI_API_KEY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": null,
+      "position": [
+        null,
+        null
+      ],
+      "id": "1f47b8b6-bd45-481a-8e63-1fa5804374b8",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\nconst hotels = (data.local_results || []).slice(0, 5).map(hotel => ({\n  name: hotel.title,\n  rating: hotel.rating,\n  reviews: hotel.reviews,\n  type: hotel.type,\n  price: hotel.price,\n  address: hotel.address,\n  latitude: hotel.gps_coordinates?.latitude,\n  longitude: hotel.gps_coordinates?.longitude,\n}));\n\nreturn [\n  {\n    json: {\n      query: data.search_information?.query_displayed,\n      hotels,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": null,
+      "position": [
+        null,
+        null
+      ],
+      "id": "f2cade81-dbe5-40b4-8311-07c56cf2ead6",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": null
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": null
+          }
+        ]
+      ]
+    }
+  },
+  "active": null,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": null,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": null
+  },
+  "versionId": "32e1e948-c083-405c-acf8-3b35c94245ac",
+  "meta": {
+    "instanceId": "YOUR_N8N_INSTANCE_ID"
+  },
+  "nodeGroups": [],
+  "id": "DD8FrHZOWpwtvn2B",
+  "tags": []
+}
