@@ -1,0 +1,311 @@
+{
+  "name": "Travel Assistant MCP Server",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "travel-assistant"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": null,
+      "position": [
+        null,
+        null
+      ],
+      "id": "6e246d7e-510e-4991-ab0a-fb5d7f00ce5b",
+      "name": "MCP Server Trigger",
+      "webhookId": "0008e1d4-4a59-42fb-ad86-7d76a82028bb"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get the current weather.\n\nReturn ONLY:\n\n- Temperature\n- Weather Condition\n- Humidity\n- Wind Speed\n\nIgnore every other field.",
+        "url": "https://api.openweathermap.org/data/2.5/weather",
+        "sendQuery": null,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{$fromAI(\"city\")}}"
+            },
+            {
+              "name": "appid",
+              "value": "YOUR_OPENWEATHER_API_KEY"
+            },
+            {
+              "name": "units",
+              "value": "metric"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": null,
+      "position": [
+        null,
+        null
+      ],
+      "id": "432aca73-1200-421d-97c7-290bd068c7ac",
+      "name": "Current Weather"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Return ONLY\n\nToday's forecast\nTomorrow's forecast\n\nFor each:\n\nDate\nTemperature\nCondition",
+        "url": "https://api.openweathermap.org/data/2.5/forecast",
+        "sendQuery": null,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{$fromAI(\"city\",\"City name\")}}"
+            },
+            {
+              "name": "appid",
+              "value": "YOUR_OPENWEATHER_API_KEY"
+            },
+            {
+              "name": "units",
+              "value": "metric"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": null,
+      "position": [
+        null,
+        null
+      ],
+      "id": "af0555a1-2c42-434b-ba42-8e923dd82e97",
+      "name": "Weather forecast"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get the latest currency exchange rates between currencies.",
+        "url": "https://api.exchangerate-api.com/v4/latest/USD",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": null,
+      "position": [
+        null,
+        null
+      ],
+      "id": "90541045-3d0a-420e-9135-a174023b179e",
+      "name": "Currency Exchange"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": null,
+          "value": "JQhNzes85pP43I4h",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/JQhNzes85pP43I4h",
+          "cachedResultName": "Tourist Information Tool"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "city": "={{$fromAI(\"city\")}}"
+          },
+          "matchingColumns": [
+            "city"
+          ],
+          "schema": [
+            {
+              "id": "city",
+              "displayName": "city",
+              "required": null,
+              "defaultMatch": null,
+              "display": null,
+              "canBeUsedToMatch": null,
+              "type": "string",
+              "removed": null
+            }
+          ],
+          "attemptToConvertTypes": null,
+          "convertFieldsToString": null
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": null,
+      "position": [
+        null,
+        null
+      ],
+      "id": "26cc32e8-a4ce-4d14-aafa-972f0e63a521",
+      "name": "Tourism attraction"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": null,
+          "value": "DD8FrHZOWpwtvn2B",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/DD8FrHZOWpwtvn2B",
+          "cachedResultName": "Hotel Search Tool"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "city": "={{$fromAI(\"city\")}}"
+          },
+          "matchingColumns": [
+            "city"
+          ],
+          "schema": [
+            {
+              "id": "city",
+              "displayName": "city",
+              "required": null,
+              "defaultMatch": null,
+              "display": null,
+              "canBeUsedToMatch": null,
+              "type": "string",
+              "removed": null
+            }
+          ],
+          "attemptToConvertTypes": null,
+          "convertFieldsToString": null
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": null,
+      "position": [
+        null,
+        null
+      ],
+      "id": "e5fd7b81-0510-4106-8715-b06e212ec770",
+      "name": "Hotel Search Tool"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": null,
+          "value": "E4e0vb5Mznz6IJqg",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/E4e0vb5Mznz6IJqg",
+          "cachedResultName": "Restaurant Search Tool"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "city": "={{$fromAI(\"city\")}}"
+          },
+          "matchingColumns": [
+            "city"
+          ],
+          "schema": [
+            {
+              "id": "city",
+              "displayName": "city",
+              "required": null,
+              "defaultMatch": null,
+              "display": null,
+              "canBeUsedToMatch": null,
+              "type": "string",
+              "removed": null
+            }
+          ],
+          "attemptToConvertTypes": null,
+          "convertFieldsToString": null
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": null,
+      "position": [
+        null,
+        null
+      ],
+      "id": "791957c6-54bf-407a-8e49-b82e887cf275",
+      "name": "Restaurant search Tool"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Current Weather": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": null
+          }
+        ]
+      ]
+    },
+    "Weather forecast": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": null
+          }
+        ]
+      ]
+    },
+    "Currency Exchange": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": null
+          }
+        ]
+      ]
+    },
+    "Tourism attraction": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": null
+          }
+        ]
+      ]
+    },
+    "Hotel Search Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": null
+          }
+        ]
+      ]
+    },
+    "Restaurant search Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": null
+          }
+        ]
+      ]
+    }
+  },
+  "active": null,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": null,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": null,
+    "timeSavedPerExecution": null
+  },
+  "versionId": "8a3c91e8-cddb-4fbd-a8df-211ea6d11553",
+  "meta": {
+    "instanceId": "YOUR_N8N_INSTANCE_ID"
+  },
+  "nodeGroups": [],
+  "id": "SuDFGzViTorsx9ei",
+  "tags": []
+}
